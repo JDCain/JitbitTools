@@ -30,7 +30,7 @@ namespace JitBit.Console
         private static async Task MainAsync()
         {
             var mergeTicketsByUserFunc = new Func<Ticket, Task>(async (x) => await MergeTicketsByUser(x));
-
+            //var updateCustomFieldFunc = new Func<Ticket, Task>(async (x) => await UpdateCustomField(x));
             foreach (Catagories catagory in Enum.GetValues(typeof(Catagories)))
             {
                 var tickets = await _jitBit.GetTickets(Convert.ToInt32(catagory));
@@ -40,6 +40,16 @@ namespace JitBit.Console
             }
 
             //await LoopTicketsTask(hdTickets, mergeTicketsByUserFunc);
+        }
+
+        private static async Task UpdateId(Ticket x)
+        {
+            var field = x.CustomFields.FirstOrDefault(y => y.FieldID == 22860);
+            if (string.IsNullOrWhiteSpace(field?.Value))
+            {
+                //if (x.Subject)
+                await _jitBit.WriteCustomField(x, field);
+            }
         }
 
         private static async Task LoopTicketsTask(IEnumerable<Ticket> tickets, Func<Ticket, Task> test)

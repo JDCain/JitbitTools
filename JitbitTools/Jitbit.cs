@@ -85,7 +85,7 @@ namespace JitbitTools
 
         public async Task CloseTicket(Ticket ticket)
         {
-            var url = $"{_baseUrl}API/UpdateTicket";
+            var url = $"{_baseUrl}/API/UpdateTicket";
             var parameters = new Dictionary<string, string> { { "id", ticket.IssueID.ToString() }, { "statusID", 3.ToString() } };
             var response = await Post(parameters, url);
         }
