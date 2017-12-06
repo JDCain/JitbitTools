@@ -11,20 +11,28 @@ namespace JitBit.Console
 {
     public class Program
     {
-        private static readonly string _baseUrl = "***********";
+        private static readonly string _baseUrl = "**********";
         private static Jitbit _jitBit;
         public static Regex Sepid => new Regex(@"(?i)(?<![0-9])[0-9]{5,6}\b(?-i)");
         static void Main(string[] args)
         {
-            _jitBit = new Jitbit(Encoding.ASCII.GetBytes("*******"), _baseUrl);
+            _jitBit = new Jitbit(Encoding.ASCII.GetBytes("**********"), _baseUrl);
             MainAsync().Wait();
         }
 
         private static async Task MainAsync()
         {
             var mergeTicketsByUserFunc = new Func<Ticket, Task>(async (x) => await MergeTicketsByUser(x));
-            var hdTickets = await _jitBit.GetTickets(Convert.ToInt32(Catagories.HdVoicemail));
-            await LoopTicketsTask(hdTickets, mergeTicketsByUserFunc);
+
+            foreach (Catagories catagory in Enum.GetValues(typeof(Catagories)))
+            {
+                var tickets = await _jitBit.GetTickets(Convert.ToInt32(catagory));
+                await CloseShortVoiceMail(tickets);
+                tickets = await _jitBit.GetTickets(Convert.ToInt32(catagory));
+                await MergeOpenVoicemails(tickets);
+            }
+
+            //await LoopTicketsTask(hdTickets, mergeTicketsByUserFunc);
         }
 
         private static async Task LoopTicketsTask(IEnumerable<Ticket> tickets, Func<Ticket, Task> test)

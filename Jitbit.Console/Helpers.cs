@@ -5,17 +5,25 @@ namespace JitBit.Console
 {
     public static class Helpers
     {
-        public static int MatchCollectonToSeconds(MatchCollection test)
+        public static int? MatchCollectonToSeconds(MatchCollection test)
         {
-            var time = 0;
+            int? time = null;
             foreach (var item in test)
             {
                 if (item.ToString().Contains("minute"))
                 {
+                    if (time == null)
+                    {
+                        time = 0;
+                    }
                     time += 60 * PareseInt(item.ToString());
                 }
                 if (int.TryParse(item.ToString(), out var blah))
                 {
+                    if (time == null)
+                    {
+                        time = 0;
+                    }
                     time += PareseInt(item.ToString());
                 }
             }
