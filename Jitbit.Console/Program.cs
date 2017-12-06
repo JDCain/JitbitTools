@@ -6,17 +6,24 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using JitbitTools;
 using JitbitTools.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace JitBit.Console
 {
     public class Program
     {
-        private static readonly string _baseUrl = "**********";
+        public static IConfigurationRoot Configuration { get; set; }
+        private static string _baseUrl;
         private static Jitbit _jitBit;
         public static Regex Sepid => new Regex(@"(?i)(?<![0-9])[0-9]{5,6}\b(?-i)");
         static void Main(string[] args)
         {
-            _jitBit = new Jitbit(Encoding.ASCII.GetBytes("**********"), _baseUrl);
+            var builder = new ConfigurationBuilder();
+            builder.AddUserSecrets<Program>();
+            Configuration = builder.Build();
+            _baseUrl = Configuration["Jitbit_Host"];
+
+            _jitBit = new Jitbit(Encoding.ASCII.GetBytes(Configuration["Jitbit_Cred"]), _baseUrl);
             MainAsync().Wait();
         }
 
