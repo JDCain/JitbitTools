@@ -18,6 +18,7 @@ namespace JitBit.Console
         private static string _baseUrl;
         private static Jitbit _jitBit;
         public static Regex Sepid => new Regex(@"(?i)(?<![0-9])[0-9]{5,6}\b(?-i)");
+        public static Regex SepidBeginsWithSpace => new Regex(@"(?<=\s)(?<![0-9])[0-9]{5,6}\b");
         static void Main(string[] args)
         {
             var builder = new ConfigurationBuilder();
