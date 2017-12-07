@@ -20,7 +20,7 @@ namespace JitbitTools
             _baseUrl = baseUrl;
         }
 
-        public async Task<IEnumerable<Ticket>> GetTicketsByParameters(Dictionary<string, string> parameters)
+        public async Task<IEnumerable<TicketSummary>> GetTicketsByParameters(Dictionary<string, string> parameters)
         {
 
             var url = $"{_baseUrl}/api/Tickets";
@@ -28,7 +28,7 @@ namespace JitbitTools
             var jsonString = await ProcessResponse(response);
             try
             {
-                return JsonConvert.DeserializeObject<List<Ticket>>(jsonString);
+                return JsonConvert.DeserializeObject<List<TicketSummary>>(jsonString);
 
             }
             catch (Exception e)
@@ -37,7 +37,7 @@ namespace JitbitTools
             }
         }
 
-        public async Task<IEnumerable<CustomField>> GetCustomFields(Ticket ticket)
+        public async Task<IEnumerable<CustomField>> GetCustomFields(TicketSummary ticket)
         {
             var url = $"{_baseUrl}/api/TicketCustomFields?id={ticket.IssueID}";
             var response = await Get(url);
@@ -53,11 +53,36 @@ namespace JitbitTools
             }
         }
 
-        public async Task<IEnumerable<Ticket>> GetTickets(int catagory, bool getCustomFields = false, string mode = "unclosed")
+        public async Task<TicketDetails> GetTicket(TicketSummary ticket)
+        {
+            return await GetTicketDetails(ticket.IssueID);
+        }
+
+        public async Task<TicketDetails> GetTicket(int id)
+        {
+            return await GetTicketDetails(id);
+        }
+
+        private async Task<TicketDetails> GetTicketDetails(int? id)
+        {
+            var url = $"{_baseUrl}/api/Ticket?id={id}";
+            var response = await Get(url);
+            var jsonString = await ProcessResponse(response);
+            try
+            {
+                return JsonConvert.DeserializeObject<TicketDetails>(jsonString);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<TicketSummary>> GetTickets(int catagory, bool getCustomFields = false, string mode = "unclosed")
         {
             var offset = 0;
-            var allTickets = new List<Ticket>();
-            List<Ticket> ticketSet;
+            var allTickets = new List<TicketSummary>();
+            List<TicketSummary> ticketSet;
             do
             {
                 ticketSet = await GetTicketsByParameters(new Dictionary<string, string>
@@ -66,7 +91,7 @@ namespace JitbitTools
                     {"count", "100"},
                     {"offset", $"{offset}"},
                     {"mode", mode}
-                }) as List<Ticket>;
+                }) as List<TicketSummary>;
                 allTickets.AddRange(ticketSet?.ToList());
 
                 offset += 100;
@@ -83,18 +108,38 @@ namespace JitbitTools
             return allTickets;
         }
 
-        public async Task CloseTicket(Ticket ticket)
+        public async Task CloseTicket(TicketSummary ticket)
+        {
+            await CloseTicket(ticket.IssueID);
+        }
+
+        public async Task CloseTicket(TicketDetails ticket)
+        {
+            await CloseTicket(ticket.TicketId);
+        }
+
+        public async Task CloseTicket(int? id)
         {
             var url = $"{_baseUrl}/API/UpdateTicket";
-            var parameters = new Dictionary<string, string> { { "id", ticket.IssueID.ToString() }, { "statusID", 3.ToString() } };
+            var parameters = new Dictionary<string, string> {{"id", id.ToString()}, {"statusID", 3.ToString()}};
             var response = await Post(parameters, url);
         }
 
-        public async Task Comment(Ticket ticket, string comment, bool techOnly = true)
+        public async Task Comment(TicketSummary ticket, string comment, bool techOnly = true)
+        {
+            await Comment(ticket.IssueID, comment, techOnly);
+        }
+
+        public async Task Comment(TicketDetails ticket, string comment, bool techOnly = true)
+        {
+            await Comment(ticket.TicketId, comment, techOnly);
+        }
+
+        public async Task Comment(int? id, string comment, bool techOnly = true)
         {
             var parameters = new Dictionary<string, string>
             {
-                {"id", ticket.IssueID.ToString()},
+                {"id", id.ToString()},
                 {"body", comment},
                 {"forTechsOnly", techOnly.ToString()}
             };
@@ -102,7 +147,7 @@ namespace JitbitTools
             var response = await Post(parameters, url);
         }
 
-        public async Task WriteCustomField(Ticket ticket, CustomField field)
+        public async Task WriteCustomField(TicketSummary ticket, CustomField field)
         {
             var url = $"{_baseUrl}/API/SetCustomField";
             var parameters = new Dictionary<string, string>

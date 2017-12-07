@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace JitbitTools.Models
 {
-    public class Ticket
+    public class TicketSummary
     {
         public int? IssueID { get; set; }
         public int? Priority { get; set; }
