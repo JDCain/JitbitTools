@@ -11,6 +11,5 @@
         LogisticsNew = 311341,
         LogisticsVm = 313825,
         PasswordResets = 314095,
-        AttendenceVm = 327428
     }
 }

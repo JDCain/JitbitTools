@@ -32,7 +32,7 @@ namespace JitBit.Console
 
         private static async Task MainAsync()
         {
-            var attVmTickets = await _jitBit.GetTickets(Convert.ToInt32(Catagories.AttendenceVm));
+            var attVmTickets = await _jitBit.GetTickets(327428);
             await MergeOpenVoicemails(attVmTickets);
             //var mergeTicketsByUserFunc = new Func<TicketSummary, Task>(async (x) => await MergeTicketsByUser(x));
             //var updateCustomFieldFunc = new Func<Ticket, Task>(async (x) => await UpdateCustomField(x));
@@ -121,15 +121,13 @@ namespace JitBit.Console
             }
             var phoneBody = detailedTickets.Where(x =>
                 Regex.IsMatch(x.Body, "(?<=You received a voice mail from<a href=\\\"tel:)[0-9]{10}"));
-            var phoneBodyGroupBy = phoneBody.GroupBy(x => Regex.Match(x.Body, "(?<=You received a voice mail from<a href=\\\"tel:)[0-9]{10}").Value).Where(x => x.Count() > 1);
-            
-
+            var phoneBodyGroupBy = phoneBody.GroupBy(x => Regex.Match(x.Body, "(?<=You received a voice mail from<a href=\\\"tel:)[0-9]{10}").Value).Where(x => x.Count() > 1);        
 
             foreach (var set in phoneBodyGroupBy)
             {
                 var newList = set.OrderBy(x => x.IssueDate).ToList();
                 var firsTicket = newList.FirstOrDefault();
-                var comment = $"Closed the following tickets and linked them to this one:{Environment.NewLine}";
+                var comment = $"Closed the following newer tickets and linked them to current ticket ({firsTicket?.TicketId}).{Environment.NewLine}";
 
                 foreach (var userTicket in newList.Skip(1))
                 {
@@ -137,7 +135,7 @@ namespace JitBit.Console
 
                     WriteLine($"Comment: {userTicket.TicketId}");
                     await _jitBit.Comment(userTicket.TicketId,
-                        $"Closing and linking to oldest open ticket {_baseUrl}/Ticket/{firsTicket?.TicketId}",
+                        $"Closing as duplicate and linking to oldest open ticket {_baseUrl}/Ticket/{firsTicket?.TicketId}",
                         techOnly: true);
                     WriteLine($"Closing: {userTicket.TicketId}");
                     await _jitBit.CloseTicket(userTicket);
