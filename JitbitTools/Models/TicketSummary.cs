@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace JitbitTools.Models
 {
-    public class TicketSummary
+    public class TicketSummary : ICustomFields
     {
-        public int? IssueID { get; set; }
+        public int IssueID { get; set; }
         public int? Priority { get; set; }
         public int? StatusID { get; set; }
         public DateTime? IssueDate { get; set; }

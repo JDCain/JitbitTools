@@ -39,13 +39,22 @@ namespace JitbitTools
 
         public async Task<IEnumerable<CustomField>> GetCustomFields(TicketSummary ticket)
         {
-            var url = $"{_baseUrl}/api/TicketCustomFields?id={ticket.IssueID}";
+            return await GetCustomFields(ticket.IssueID);
+        }
+
+        public async Task<IEnumerable<CustomField>> GetCustomFields(TicketDetails ticket)
+        {
+            return await GetCustomFields(ticket.IssueId);
+        }
+
+        public async Task<IEnumerable<CustomField>> GetCustomFields(int id)
+        {
+            var url = $"{_baseUrl}/api/TicketCustomFields?id={id}";
             var response = await Get(url);
             var jsonString = await ProcessResponse(response);
             try
             {
                 return JsonConvert.DeserializeObject<List<CustomField>>(jsonString);
-
             }
             catch (Exception)
             {
@@ -53,17 +62,12 @@ namespace JitbitTools
             }
         }
 
-        public async Task<TicketDetails> GetTicket(TicketSummary ticket)
+        public async Task<TicketDetails> GetTicketDetails(TicketSummary ticket)
         {
             return await GetTicketDetails(ticket.IssueID);
         }
 
-        public async Task<TicketDetails> GetTicket(int id)
-        {
-            return await GetTicketDetails(id);
-        }
-
-        private async Task<TicketDetails> GetTicketDetails(int? id)
+        public async Task<TicketDetails> GetTicketDetails(int id)
         {
             var url = $"{_baseUrl}/api/Ticket?id={id}";
             var response = await Get(url);
@@ -78,7 +82,23 @@ namespace JitbitTools
             }
         }
 
-        public async Task<IEnumerable<TicketSummary>> GetTickets(int catagory, bool getCustomFields = false, string mode = "unclosed")
+        public async Task<IEnumerable<TicketDetails>> GetDetailedTickets(IEnumerable<TicketSummary> tickets, bool getCustomFields = false)
+        {
+            var detailedTickets = new List<TicketDetails>();
+            foreach (var ticket in tickets)
+            {
+                var ticketDetails = await GetTicketDetails(ticket);
+                if (getCustomFields)
+                {
+                    ticketDetails.CustomFields = await GetCustomFields(ticketDetails);
+                 
+                }
+                detailedTickets.Add(ticketDetails);
+            }
+            return detailedTickets;
+        }
+
+        public async Task<IEnumerable<TicketSummary>> GetSummaryTickets(int catagory, bool getCustomFields = false, string mode = "unclosed")
         {
             var offset = 0;
             var allTickets = new List<TicketSummary>();
@@ -100,8 +120,7 @@ namespace JitbitTools
             if (getCustomFields)
             {
                 foreach (var ticket in allTickets)
-                {
-                    Console.WriteLine($"Getting Custom fields for {ticket.IssueID}");
+                {                   
                     ticket.CustomFields = await GetCustomFields(ticket);
                 }
             }
@@ -147,12 +166,12 @@ namespace JitbitTools
             var response = await Post(parameters, url);
         }
 
-        public async Task WriteCustomField(TicketSummary ticket, CustomField field)
+        public async Task WriteCustomField(int ticketId, CustomField field)
         {
             var url = $"{_baseUrl}/API/SetCustomField";
             var parameters = new Dictionary<string, string>
             {
-                {"ticketid", ticket.IssueID.ToString()},
+                {"ticketid", ticketId.ToString()},
                 {"fieldId", field.FieldID.ToString()},
                 {"value", field.Value}
             };

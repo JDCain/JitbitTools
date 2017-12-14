@@ -1,8 +1,10 @@
 ﻿
 using System;
+using System.Collections.Generic;
+
 namespace JitbitTools.Models
 {
-    public class TicketDetails
+    public class TicketDetails : ICustomFields
     {
         public Attachment[] Attachments { get; set; }
         public Submitteruserinfo SubmitterUserInfo { get; set; }
@@ -13,7 +15,8 @@ namespace JitbitTools.Models
         public object[] Tags { get; set; }
         public string OnBehalfUserName { get; set; }
         public Integrations Integrations { get; set; }
-        public int? TicketId { get; set; }
+        public int TicketId { get; set; }
+        public int IssueId => TicketId;
         public int? UserId { get; set; }
         public int? AssignedToUserId { get; set; }
         public DateTime? IssueDate { get; set; }
@@ -33,7 +36,8 @@ namespace JitbitTools.Models
         public bool IsCurrentUserTechInThisCategory { get; set; }
         public bool SubmittedByCurrentUser { get; set; }
         public string Status { get; set; }
-        public bool StatusStopTimeSpent { get; set; }
+        public bool StatusStopTimeSpent { get; set; }        
+        public IEnumerable<CustomField> CustomFields { get; set; }
     }
 
     public class Submitteruserinfo
