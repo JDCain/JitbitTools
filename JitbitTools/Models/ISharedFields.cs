@@ -7,5 +7,6 @@ namespace JitbitTools.Models
         int IssueID { get; }
         int TicketId { get; }
         DateTime? IssueDate { get; }
+        string Subject { get; }
     }
 }

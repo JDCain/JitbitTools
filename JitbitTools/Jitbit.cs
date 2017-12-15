@@ -62,7 +62,7 @@ namespace JitbitTools
             }
         }
 
-        public async Task<TicketDetails> GetTicketDetails(TicketSummary ticket)
+        public async Task<TicketDetails> GetTicketDetails(ISharedFields ticket)
         {
             return await GetTicketDetails(ticket.IssueID);
         }
@@ -82,7 +82,7 @@ namespace JitbitTools
             }
         }
 
-        public async Task<IEnumerable<TicketDetails>> GetDetailedTickets(IEnumerable<TicketSummary> tickets, bool getCustomFields = false)
+        public async Task<IEnumerable<TicketDetails>> GetDetailedTickets(IEnumerable<ISharedFields> tickets, bool getCustomFields = false)
         {
             var detailedTickets = new List<TicketDetails>();
             foreach (var ticket in tickets)

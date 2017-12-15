@@ -39,8 +39,8 @@ namespace JitBit.Console
             }
 
 
-            await FindAndWriteId(await _jitBit.GetSummaryTickets(326585));
-            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.HdEmails)));
+            //await FindAndWriteId(await _jitBit.GetSummaryTickets(326585));
+            //await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.HdEmails)));
             var attVmTickets = await _jitBit.GetSummaryTickets(327428);
             await MergeOpenVoicemails(attVmTickets);
             //var mergeTicketsByUserFunc = new Func<TicketSummary, Task>(async (x) => await MergeTicketsByUser(x));
@@ -127,7 +127,7 @@ namespace JitBit.Console
         //    }
         //}
 
-        private static async Task CloseShortVoiceMail(IEnumerable<TicketSummary> tickets, int lessThanSeconds)
+        private static async Task CloseShortVoiceMail(IEnumerable<ISharedFields> tickets, int lessThanSeconds)
         {
             foreach (var ticket in tickets)
             {
@@ -142,7 +142,7 @@ namespace JitBit.Console
             }
         }
 
-        private static async Task MergeOpenVoicemails(IEnumerable<TicketSummary> tickets)
+        private static async Task MergeOpenVoicemails(IEnumerable<ISharedFields> tickets)
         {
             //var phoneUsers = tickets.Where(x => Regex.IsMatch(x.UserName, @"^[0-9]{10}"));
             //var phonesGroupBy = phoneUsers.GroupBy(s => s.UserName.Substring(0, 9)).Where(x => x.Count() > 1);
