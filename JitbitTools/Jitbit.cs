@@ -44,7 +44,7 @@ namespace JitbitTools
 
         public async Task<IEnumerable<CustomField>> GetCustomFields(TicketDetails ticket)
         {
-            return await GetCustomFields(ticket.IssueId);
+            return await GetCustomFields(ticket.IssueID);
         }
 
         public async Task<IEnumerable<CustomField>> GetCustomFields(int id)
@@ -127,14 +127,9 @@ namespace JitbitTools
             return allTickets;
         }
 
-        public async Task CloseTicket(TicketSummary ticket)
+        public async Task CloseTicket(ISharedFields ticket)
         {
             await CloseTicket(ticket.IssueID);
-        }
-
-        public async Task CloseTicket(TicketDetails ticket)
-        {
-            await CloseTicket(ticket.TicketId);
         }
 
         public async Task CloseTicket(int? id)
@@ -144,14 +139,9 @@ namespace JitbitTools
             var response = await Post(parameters, url);
         }
 
-        public async Task Comment(TicketSummary ticket, string comment, bool techOnly = true)
+        public async Task Comment(ISharedFields ticket, string comment, bool techOnly = true)
         {
             await Comment(ticket.IssueID, comment, techOnly);
-        }
-
-        public async Task Comment(TicketDetails ticket, string comment, bool techOnly = true)
-        {
-            await Comment(ticket.TicketId, comment, techOnly);
         }
 
         public async Task Comment(int? id, string comment, bool techOnly = true)

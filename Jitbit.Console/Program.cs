@@ -31,11 +31,17 @@ namespace JitBit.Console
 
         private static async Task MainAsync()
         {
-            var tickets1 = await _jitBit.GetSummaryTickets(326585);
-            await FindAndWriteId(tickets1);
+            var attEmail = await _jitBit.GetSummaryTickets(326585);
+            var tests = attEmail.Where(x => !x.Subject.Contains("Voice Mail") && !x.Subject.Contains("(no subject)")).GroupBy(x => x.Subject).Where(x => x.Count() > 1);
+            foreach (var test in tests)
+            {
+                await MergeGroupToOldestTicket(test);
+            }
 
+
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(326585));
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.HdEmails)));
             var attVmTickets = await _jitBit.GetSummaryTickets(327428);
-            
             await MergeOpenVoicemails(attVmTickets);
             //var mergeTicketsByUserFunc = new Func<TicketSummary, Task>(async (x) => await MergeTicketsByUser(x));
             //var updateCustomFieldFunc = new Func<Ticket, Task>(async (x) => await UpdateCustomField(x));
@@ -49,9 +55,9 @@ namespace JitBit.Console
             //await LoopTicketsTask(hdTickets, mergeTicketsByUserFunc);
         }
 
-        private static async Task FindAndWriteId(IEnumerable<TicketSummary> tickets1)
+        private static async Task FindAndWriteId(IEnumerable<TicketSummary> tickets)
         {
-            var deets = await _jitBit.GetDetailedTickets(tickets1.Where(x => !x.Subject.Contains("Voice Mail")),
+            var deets = await _jitBit.GetDetailedTickets(tickets.Where(x => !x.Subject.Contains("Voice Mail")),
                 getCustomFields: true);
             foreach (var ticket in deets)
             {
@@ -153,7 +159,7 @@ namespace JitBit.Console
 
         
 
-        private static async Task MergeGroupToOldestTicket(IGrouping<string, TicketDetails> set)
+        private static async Task MergeGroupToOldestTicket(IEnumerable<ISharedFields> set)
         {
             var newList = set.OrderBy(x => x.IssueDate).ToList();
             var firsTicket = newList.FirstOrDefault();
@@ -169,10 +175,10 @@ namespace JitBit.Console
                     $"Closing as duplicate and linking to oldest open ticket {_baseUrl}/Ticket/{firsTicket?.TicketId}",
                     techOnly: true);
                 WriteLine($"Closing: {userTicket.TicketId}");
-                await _jitBit.CloseTicket(userTicket);
+                await _jitBit.CloseTicket(userTicket.IssueID);
             }
             WriteLine($"Comment: {firsTicket?.TicketId}");
-            await _jitBit.Comment(firsTicket, comment, techOnly: true);
+            await _jitBit.Comment(firsTicket?.IssueID, comment, techOnly: true);
         }
     }
 }

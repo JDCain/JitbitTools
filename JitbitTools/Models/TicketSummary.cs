@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace JitbitTools.Models
 {
-    public class TicketSummary : ICustomFields
+    public class TicketSummary : ICustomFields, ISharedFields
     {
         public int IssueID { get; set; }
         public int? Priority { get; set; }
@@ -33,5 +33,7 @@ namespace JitbitTools.Models
         public string Origin { get; set; }
         public string ViewingTechs { get; set; }
         public IEnumerable<CustomField> CustomFields { get; set; }
+
+        public int TicketId => IssueID;
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace JitbitTools.Models
 {
-    public class TicketDetails : ICustomFields
+    public class TicketDetails : ICustomFields, ISharedFields
     {
         public Attachment[] Attachments { get; set; }
         public Submitteruserinfo SubmitterUserInfo { get; set; }
@@ -16,7 +16,7 @@ namespace JitbitTools.Models
         public string OnBehalfUserName { get; set; }
         public Integrations Integrations { get; set; }
         public int TicketId { get; set; }
-        public int IssueId => TicketId;
+        public int IssueID => TicketId;
         public int? UserId { get; set; }
         public int? AssignedToUserId { get; set; }
         public DateTime? IssueDate { get; set; }
