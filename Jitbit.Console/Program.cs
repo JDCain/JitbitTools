@@ -31,15 +31,12 @@ namespace JitBit.Console
         private static async Task MainAsync()
         {
             var attEmail = await _jitBit.GetSummaryTickets(326585);
-            var tests = attEmail.Where(x => !x.Subject.Contains("Voice Mail") && !x.Subject.Contains("(no subject)")).GroupBy(x => x.Subject).Where(x => x.Count() > 1);
-            foreach (var test in tests)
+            var attEmailFiltered = attEmail.Where(x => !x.Subject.Contains("Voice Mail") && !x.Subject.Contains("(no subject)")).GroupBy(x => x.Subject).Where(x => x.Count() > 1);
+            foreach (var test in attEmailFiltered)
             {
                 await MergeGroupToOldestTicket(test);
             }
 
-
-            await FindAndWriteId(await _jitBit.GetSummaryTickets(326585));
-            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.HdEmails)));
             var attVmTickets = await _jitBit.GetSummaryTickets(327428);
             await MergeOpenVoicemails(attVmTickets);
             //var mergeTicketsByUserFunc = new Func<TicketSummary, Task>(async (x) => await MergeTicketsByUser(x));
@@ -50,7 +47,9 @@ namespace JitBit.Console
                 await CloseShortVoiceMail(tickets, 10);
                 tickets = await _jitBit.GetSummaryTickets(Convert.ToInt32(catagory));
                 await MergeOpenVoicemails(tickets);
-            }           
+            }
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(326585));
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.HdEmails)));
             //await LoopTicketsTask(hdTickets, mergeTicketsByUserFunc);
         }
 
@@ -71,19 +70,20 @@ namespace JitBit.Console
                     if (x.Success)
                     {
                         if (field != null) field.Value = x.ToString();
-                        await UpdateSepidField(ticket, ticket.TicketId);
+                        WriteLine($"Updating ID Field: {ticket.TicketId} --> {field?.Value}");
+                        await UpdateSepidField(ticket);
                     }
                 }
             }
         }
 
-        private static async Task UpdateSepidField(ICustomFields ticket, int ticketId)
+        private static async Task UpdateSepidField(ISharedFields ticket)
         {
             var field = ticket.CustomFields.FirstOrDefault(y => y.FieldID == 22860);
             if (!string.IsNullOrWhiteSpace(field?.Value))
             {
                 //if (x.Subject)
-                await _jitBit.WriteCustomField(ticketId, field);
+                await _jitBit.WriteCustomField(ticket.TicketId, field);
             }
         }
 
