@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -39,8 +38,8 @@ namespace JitBit.Console
             }
 
 
-            //await FindAndWriteId(await _jitBit.GetSummaryTickets(326585));
-            //await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.HdEmails)));
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(326585));
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.HdEmails)));
             var attVmTickets = await _jitBit.GetSummaryTickets(327428);
             await MergeOpenVoicemails(attVmTickets);
             //var mergeTicketsByUserFunc = new Func<TicketSummary, Task>(async (x) => await MergeTicketsByUser(x));

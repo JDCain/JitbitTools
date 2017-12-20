@@ -9,7 +9,9 @@
         LogisticsBreakfix = 311332,
         LogisticsPickup = 311340,
         LogisticsNew = 311341,
-        LogisticsVm = 313825,
+        LogisticsVoicemail = 313825,
         PasswordResets = 314095,
+        Connectivity = 311342,
+        Testing = 165052,
     }
 }
