@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,12 +20,22 @@ namespace JitBit.Console
         public static Regex Sepid => new Regex(@"(?i)\b(?<!#|:|=|[a-z]{4}|OH\s|OHIO\s)[a-z]{0,3}(\d{5,6})\b(?-i)");
         static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder();
-            builder.AddUserSecrets<Program>();
+            var environment = Environment.GetEnvironmentVariable("environment");
+
+            var builder = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory);
+
+            if (environment == "production")
+            {
+                builder.AddJsonFile(@"appsettings.json", optional: false, reloadOnChange: true);
+            }
+            else
+            {
+                builder.AddUserSecrets<Program>();
+            }
             Configuration = builder.Build();
             _baseUrl = Configuration["Jitbit_Host"];
-
             _jitBit = new Jitbit(Encoding.ASCII.GetBytes(Configuration["Jitbit_Cred"]), _baseUrl);
+      
             MainAsync().Wait();
         }
 
