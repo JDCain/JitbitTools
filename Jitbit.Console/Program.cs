@@ -33,7 +33,7 @@ namespace JitBit.Console
                 builder.AddUserSecrets<Program>();
             }
             Configuration = builder.Build();
-            _baseUrl = Configuration["Jitbit_Host"];
+            _baseUrl = Configuration["Jitbit_Host"]; 
             _jitBit = new Jitbit(Encoding.ASCII.GetBytes(Configuration["Jitbit_Cred"]), _baseUrl);
       
             MainAsync().Wait();
@@ -60,7 +60,11 @@ namespace JitBit.Console
                 await MergeOpenVoicemails(tickets);
             }
             await FindAndWriteId(await _jitBit.GetSummaryTickets(326585));
-            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.HdEmails)));
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.HdEmails), getCustomFields:true));
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.HelpCenter), getCustomFields: true));
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.LogisticsNew), getCustomFields: true));
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.LogisticsBreakfix), getCustomFields: true));
+            await FindAndWriteId(await _jitBit.GetSummaryTickets(Convert.ToInt32(Catagories.LogisticsPickup), getCustomFields: true));
             //await LoopTicketsTask(hdTickets, mergeTicketsByUserFunc);
         }
 
@@ -69,7 +73,10 @@ namespace JitBit.Console
             var deets = await _jitBit.GetDetailedTickets(tickets.Where(x => !x.Subject.Contains("Voice Mail")),
                 getCustomFields: true);
             foreach (var ticket in deets)
+
             {
+                var sepField = ticket.CustomFields.FirstOrDefault(y => y.FieldID == 23600);
+                var crmField = ticket.CustomFields.FirstOrDefault(y => y.FieldID == 23601);
                 var field = ticket.CustomFields.FirstOrDefault(y => y.FieldID == 22860);
                 if (string.IsNullOrWhiteSpace(field?.Value))
                 {
@@ -80,22 +87,48 @@ namespace JitBit.Console
                     }
                     if (x.Success)
                     {
-                        if (field != null) field.Value = x.ToString();
+                        if (field != null) field.Value = x.ToString(); 
+                        if (crmField != null) crmField.Value = $@"{Configuration["Url0"]}{x}";
+                        if (sepField != null) sepField.Value = $@"{Configuration["Url1"]}{x}";
                         WriteLine($"Updating ID Field: {ticket.TicketId} --> {field?.Value}");
-                        await UpdateSepidField(ticket);
+                        await UpdateSepidFields(ticket);
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(field?.Value) && string.IsNullOrWhiteSpace(sepField?.Value) && string.IsNullOrWhiteSpace(crmField?.Value))
+                {
+                    var x = Sepid.Match(field?.Value);
+                    if (x.Success)
+                    {
+                        if (crmField != null) crmField.Value = $@"https://ecotcrm.ecotoh.net/Student/detailsbysepid/{x}";
+                        if (sepField != null) sepField.Value = $@"https://sep.ecotoh.net/eSTARS/Homepages/Staff/StudentDetails/{x}";
+                        WriteLine($"Updating ID Field: {ticket.TicketId} --> {field?.Value}");
+                        await UpdateSepidFields(ticket);
                     }
                 }
             }
         }
 
-        private static async Task UpdateSepidField(ISharedFields ticket)
+        private static async Task UpdateSepidFields(ISharedFields ticket)
         {
             var field = ticket.CustomFields.FirstOrDefault(y => y.FieldID == 22860);
+            var sepField = ticket.CustomFields.FirstOrDefault(y => y.FieldID == 23600);
+            var crmField = ticket.CustomFields.FirstOrDefault(y => y.FieldID == 23601);
             if (!string.IsNullOrWhiteSpace(field?.Value))
             {
                 //if (x.Subject)
                 await _jitBit.WriteCustomField(ticket.TicketId, field);
             }
+            if (!string.IsNullOrWhiteSpace(sepField?.Value))
+            {
+                //if (x.Subject)
+                await _jitBit.WriteCustomField(ticket.TicketId, sepField);
+            }
+            if (!string.IsNullOrWhiteSpace(crmField?.Value))
+            {
+                //if (x.Subject)
+                await _jitBit.WriteCustomField(ticket.TicketId, crmField);
+            }
+      
         }
 
         private static async Task LoopTicketsTask(IEnumerable<TicketSummary> tickets, Func<TicketSummary, Task> func)
