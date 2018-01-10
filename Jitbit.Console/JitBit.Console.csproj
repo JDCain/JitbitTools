@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JitbitTools\JitbitTools.csproj" />
+    <ProjectReference Include="..\Jitbit.Core\Jitbit.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

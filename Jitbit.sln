@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2010
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JitbitTools", "JitbitTools\JitbitTools.csproj", "{3C4748EF-5147-4BF2-A415-F3FF9EE50FF0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JitBit.Console", "Jitbit.Console\JitBit.Console.csproj", "{5AB18F3D-0E57-46F5-8A05-57A86C6BD18A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jitbit.WebJob", "Jitbit.WebJob\Jitbit.WebJob.csproj", "{D9DDD59D-2B1B-4067-AE60-8E190729609F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jitbit.Core", "Jitbit.Core\Jitbit.Core.csproj", "{D6BFCEE3-6BA3-47BF-A5AC-9697AEBCF35E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{5AB18F3D-0E57-46F5-8A05-57A86C6BD18A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AB18F3D-0E57-46F5-8A05-57A86C6BD18A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AB18F3D-0E57-46F5-8A05-57A86C6BD18A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9DDD59D-2B1B-4067-AE60-8E190729609F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9DDD59D-2B1B-4067-AE60-8E190729609F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9DDD59D-2B1B-4067-AE60-8E190729609F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9DDD59D-2B1B-4067-AE60-8E190729609F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6BFCEE3-6BA3-47BF-A5AC-9697AEBCF35E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6BFCEE3-6BA3-47BF-A5AC-9697AEBCF35E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6BFCEE3-6BA3-47BF-A5AC-9697AEBCF35E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6BFCEE3-6BA3-47BF-A5AC-9697AEBCF35E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

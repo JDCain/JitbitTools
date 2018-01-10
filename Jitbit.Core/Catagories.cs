@@ -1,4 +1,4 @@
-﻿namespace JitBit.Console
+﻿namespace JitBit.Core
 {
     public enum Catagories
     {
